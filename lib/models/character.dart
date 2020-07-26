@@ -42,4 +42,10 @@ class Character extends Equatable{
     );
   }
 
+  @override
+  String toString() {
+    return "id: $id\nname: $name\nstatus: $status\nspecies: $species\ntype: $type\ngender: $gender\norigin: $origin\nlocation: $location\n" +
+    "episodes: $episode\ncreated: $created";
+  }
+
 }

@@ -1,46 +1,39 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rickandmortyuniverse/bloc/character/bloc.dart';
-import 'package:rickandmortyuniverse/widgets/character.dart';
-import 'package:rickandmortyuniverse/repositories/character_api_client.dart';
-import 'package:rickandmortyuniverse/repositories/character_repository.dart';
-import 'package:rickandmortyuniverse/simple_bloc_delegate.dart';
+import 'package:rickandmortyuniverse/bloc/bloc.dart';
+import 'package:rickandmortyuniverse/repositories/api_client.dart';
+import 'package:rickandmortyuniverse/repositories/repository.dart';
+import 'package:rickandmortyuniverse/simple_bloc_observer.dart';
 import 'package:http/http.dart' as http;
-import 'package:bloc/bloc.dart';
+import 'package:rickandmortyuniverse/widgets/character_list.dart';
 
 void main() {
- /* Routes.createRoutes();*/
-  BlocSupervisor.delegate = SimpleBlocDelegate();
+   Bloc.observer = SimpleBlocObserver();
 
-  final CharacterRepository characterRepository = CharacterRepository(
-    characterApiClient: CharacterApiClient(
+  final Repository repository = Repository(
+    apiClient: ApiClient(
       httpClient: http.Client(),
     )
   );
 
-  runApp(MyApp(characterRepository: characterRepository));
+  runApp(MyApp(repository: repository));
 }
 
 class MyApp extends StatelessWidget {
-  final CharacterRepository characterRepository;
+  final Repository repository;
 
-  MyApp({Key key, @required this.characterRepository}) : assert(characterRepository != null), super(key: key);
+  MyApp({Key key, @required this.repository}) : assert(repository != null), super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-/*      onGenerateRoute: Routes.sailor.generator(),
-      navigatorKey: Routes.sailor.navigatorKey,*/
+      theme: ThemeData.dark(),
       home: BlocProvider(
-        create: (context) => CharacterBloc(characterRepository: characterRepository),
-        child: Character(),
-      ),
+        create: (context) => CharacterListBloc(repository: repository)..add(CharacterListFetched()),
+        child: CharacterList(repository: repository,)
+      )
     );
   }
 }
